@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Hobbyregnskap">
+  <!-- Paper-bakgrunn (matcher theme_color) -->
+  <rect width="512" height="512" fill="#E7E2D0"/>
+  <!-- Monogram «H» tegnet som vektorformer med slab-serif for Fraunces-preg.
+       All geometri holdes innenfor den sentrale trygge sonen (maskable). -->
+  <g fill="#252B1E">
+    <!-- Venstre stamme + serifer -->
+    <rect x="161" y="156" width="32" height="200" rx="4"/>
+    <rect x="147" y="152" width="60" height="16" rx="4"/>
+    <rect x="147" y="344" width="60" height="16" rx="4"/>
+    <!-- Høyre stamme + serifer -->
+    <rect x="319" y="156" width="32" height="200" rx="4"/>
+    <rect x="305" y="152" width="60" height="16" rx="4"/>
+    <rect x="305" y="344" width="60" height="16" rx="4"/>
+    <!-- Tverrbjelke -->
+    <rect x="185" y="240" width="142" height="32" rx="4"/>
+  </g>
+  <!-- Gull-baselinje: diskret signatur-nikk -->
+  <rect x="196" y="378" width="120" height="8" rx="4" fill="#AD8226"/>
+</svg>

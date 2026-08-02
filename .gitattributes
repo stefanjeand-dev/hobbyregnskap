@@ -1,0 +1,9 @@
+# Normaliser tekstfiler til LF i repoet (unngår CRLF-støy på tvers av maskiner).
+* text=auto eol=lf
+
+# Binærfiler – ikke rør linjeslutt.
+*.png binary
+*.ico binary
+*.zip binary
+*.woff binary
+*.woff2 binary

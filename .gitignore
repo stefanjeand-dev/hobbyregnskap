@@ -1,0 +1,14 @@
+# Avhengigheter
+node_modules
+
+# Byggeutdata
+dist
+dev-dist
+
+# Vite
+.vite
+
+# Diverse
+*.local
+.DS_Store
+Thumbs.db

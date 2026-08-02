@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #e7e2d0; /* paper */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Unngå gummibånd-scroll / uønsket zoom på iOS */
+  overscroll-behavior-y: none;
+  text-rendering: optimizeLegibility;
+}
+
+/* Hjelpeklasse for iOS safe-area under den flytende «+»-knappen */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.fab-offset {
+  bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
+}
