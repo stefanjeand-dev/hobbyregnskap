@@ -3,9 +3,16 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
+// GitHub Pages serverer prosjektsider under /<repo>/, så appen ligger på
+// https://<bruker>.github.io/hobbyregnskap/. `base` må matche dette slik at
+// alle asset-URL-er, manifestet og service worker-scope blir riktige.
+// (Sett til "/" om du senere flytter til eget domene eller <bruker>.github.io.)
+const base = "/hobbyregnskap/";
+
 // Hobbyregnskap – frittstående, installerbar PWA.
 // Alt kjører klient-side (localStorage), ingen runtime-nettverkskall.
 export default defineConfig({
+  base,
   plugins: [
     react(),
     tailwindcss(),
@@ -13,6 +20,7 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "apple-touch-icon-180x180.png", "icon.svg"],
       manifest: {
+        id: base,
         name: "Hobbyregnskap",
         short_name: "Hobbyregnskap",
         description:
@@ -22,8 +30,8 @@ export default defineConfig({
         background_color: "#E7E2D0",
         display: "standalone",
         orientation: "portrait",
-        start_url: "/",
-        scope: "/",
+        start_url: base,
+        scope: base,
         icons: [
           { src: "pwa-64x64.png", sizes: "64x64", type: "image/png" },
           { src: "pwa-192x192.png", sizes: "192x192", type: "image/png" },

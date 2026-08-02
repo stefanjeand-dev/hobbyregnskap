@@ -1,0 +1,52 @@
+name: Deploy til GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Rettigheter som deploy-pages/id-token trenger.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Kun én Pages-deploy om gangen; nyeste push vinner.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sett opp Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Installer avhengigheter
+        run: npm ci
+
+      - name: Bygg (Vite + PWA)
+        run: npm run build
+
+      - name: Last opp Pages-artefakt
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy til GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
