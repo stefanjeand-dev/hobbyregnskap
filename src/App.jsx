@@ -6,6 +6,7 @@ import { useMediaQuery } from "./hooks/useMediaQuery";
 import Dashboard from "./components/Dashboard";
 import ProjectDetail from "./components/ProjectDetail";
 import EmptyDetail from "./components/EmptyDetail";
+import AllOverview from "./components/AllOverview";
 import AddProjectSheet from "./components/AddProjectSheet";
 import AddTransactionSheet from "./components/AddTransactionSheet";
 import SettingsSheet from "./components/SettingsSheet";
@@ -22,6 +23,7 @@ export default function App() {
   const [showAddTxn, setShowAddTxn] = useState(false);
   const [editingTxn, setEditingTxn] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [showAllOverview, setShowAllOverview] = useState(false);
 
   const persist = (next) => {
     setData(next);
@@ -80,12 +82,14 @@ export default function App() {
   const clearAllData = () => {
     persist(emptyData());
     setActiveProjectId(null);
+    setShowAllOverview(false);
   };
 
   // JSON-import: full overskriving (v1, ingen sammenslåing).
   const importData = (imported) => {
     persist(imported);
     setActiveProjectId(null);
+    setShowAllOverview(false);
   };
 
   // ---- Avledninger ----
@@ -127,6 +131,16 @@ export default function App() {
     setShowAddTxn(true);
   };
 
+  // Valg av prosjekt vs. samlet oversikt er gjensidig utelukkende.
+  const selectProject = (id) => {
+    setActiveProjectId(id);
+    setShowAllOverview(false);
+  };
+  const openAllOverview = () => {
+    setShowAllOverview(true);
+    setActiveProjectId(null);
+  };
+
   const dashboard = (
     <Dashboard
       projects={data.projects}
@@ -134,9 +148,11 @@ export default function App() {
       projectCount={projectCount}
       overallTotal={overallTotal}
       activeProjectId={activeProjectId}
-      onSelect={(id) => setActiveProjectId(id)}
+      onSelect={selectProject}
       onAddProject={() => setShowAddProject(true)}
       onOpenSettings={() => setShowSettings(true)}
+      onOpenAllOverview={openAllOverview}
+      allOverviewActive={isDesktop && showAllOverview}
       isDesktop={isDesktop}
     />
   );
@@ -156,6 +172,15 @@ export default function App() {
     />
   ) : null;
 
+  const allOverviewEl = (
+    <AllOverview
+      transactions={data.transactions}
+      overallTotal={overallTotal}
+      isDesktop={isDesktop}
+      onBack={() => setShowAllOverview(false)}
+    />
+  );
+
   return (
     <div
       className="min-h-screen w-full"
@@ -166,7 +191,11 @@ export default function App() {
         <div className="max-w-[1100px] mx-auto px-6 py-8 grid grid-cols-[360px_1fr] gap-8 items-start">
           <div>{dashboard}</div>
           <div>
-            {detail || (
+            {showAllOverview ? (
+              allOverviewEl
+            ) : detail ? (
+              detail
+            ) : (
               <EmptyDetail
                 hasProjects={data.projects.length > 0}
                 onAddProject={() => setShowAddProject(true)}
@@ -180,7 +209,7 @@ export default function App() {
           className="max-w-[480px] mx-auto min-h-screen relative pb-28"
           style={{ background: COLORS.paper }}
         >
-          {activeProject ? detail : dashboard}
+          {showAllOverview ? allOverviewEl : activeProject ? detail : dashboard}
         </div>
       )}
 

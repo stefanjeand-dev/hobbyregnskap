@@ -1,13 +1,14 @@
 import { useMemo, useState } from "react";
 import { ArrowLeft, Download, Plus, AlertTriangle } from "lucide-react";
 import { COLORS } from "../constants";
-import { formatKr, monthShort } from "../lib/format";
+import { formatKr } from "../lib/format";
+import { buildOverview } from "../lib/overview";
 import { exportProjectCsv } from "../lib/csv";
 import TxnRow from "./TxnRow";
-import OverviewPanel from "./OverviewPanel";
+import OverviewContent from "./OverviewContent";
 
 // Detaljvisning for ett prosjekt. Full mobilskjerm, eller høyre kolonne på desktop.
-// Alle måned/år/kategori-avledninger beregnes her fra prosjektets transaksjoner.
+// Oversikts-avledningene beregnes via den delte buildOverview(txns).
 export default function ProjectDetail({
   project,
   transactions,
@@ -36,51 +37,10 @@ export default function ProjectDetail({
     [projectTxns]
   );
 
-  const monthlyData = useMemo(() => {
-    const map = {};
-    projectTxns.forEach((t) => {
-      const key = t.date.slice(0, 7);
-      if (!map[key]) map[key] = { key, income: 0, expense: 0 };
-      if (t.type === "income") map[key].income += t.amount;
-      else map[key].expense += t.amount;
-    });
-    return Object.values(map).sort((a, b) => (a.key < b.key ? 1 : -1));
-  }, [projectTxns]);
-
-  const yearlyData = useMemo(() => {
-    const map = {};
-    projectTxns.forEach((t) => {
-      const key = t.date.slice(0, 4);
-      if (!map[key]) map[key] = { key, income: 0, expense: 0 };
-      if (t.type === "income") map[key].income += t.amount;
-      else map[key].expense += t.amount;
-    });
-    return Object.values(map).sort((a, b) => (a.key < b.key ? 1 : -1));
-  }, [projectTxns]);
-
-  const categoryBreakdown = useMemo(() => {
-    const build = (type) => {
-      const map = {};
-      projectTxns
-        .filter((t) => t.type === type)
-        .forEach((t) => {
-          map[t.category] = (map[t.category] || 0) + t.amount;
-        });
-      return Object.entries(map)
-        .map(([category, amount]) => ({ category, amount }))
-        .sort((a, b) => b.amount - a.amount);
-    };
-    return { income: build("income"), expense: build("expense") };
-  }, [projectTxns]);
-
-  const chartData = useMemo(
-    () =>
-      monthlyData
-        .slice(0, 12)
-        .slice()
-        .reverse()
-        .map((m) => ({ name: monthShort(m.key), Inntekt: m.income, Utgift: m.expense })),
-    [monthlyData]
+  // Delt logikk med den samlede oversikten – ingen duplisering.
+  const { monthlyData, yearlyData, categoryBreakdown, chartData } = useMemo(
+    () => buildOverview(projectTxns),
+    [projectTxns]
   );
 
   const pad = isDesktop ? "" : "px-5";
@@ -174,7 +134,7 @@ export default function ProjectDetail({
             ))
           ))}
         {tab === "overview" && (
-          <OverviewPanel
+          <OverviewContent
             monthlyData={monthlyData}
             yearlyData={yearlyData}
             categoryBreakdown={categoryBreakdown}
