@@ -1,4 +1,4 @@
-import { Settings, FolderPlus } from "lucide-react";
+import { Settings, FolderPlus, ChevronRight } from "lucide-react";
 import { COLORS } from "../constants";
 import { formatKr } from "../lib/format";
 import ReceiptCard from "./ReceiptCard";
@@ -13,6 +13,8 @@ export default function Dashboard({
   onSelect,
   onAddProject,
   onOpenSettings,
+  onOpenAllOverview,
+  allOverviewActive = false,
   isDesktop = false,
 }) {
   return (
@@ -35,12 +37,17 @@ export default function Dashboard({
       </div>
 
       <div className="mb-6">
-        <div
-          className="flex items-baseline justify-between py-3"
-          style={{ borderBottom: `1px solid ${COLORS.line}` }}
+        <button
+          onClick={onOpenAllOverview}
+          className="w-full flex items-baseline justify-between py-3 text-left active:opacity-70 transition-opacity"
+          style={{ background: "none", border: "none", borderBottom: `1px solid ${COLORS.line}` }}
         >
-          <span className="text-sm" style={{ color: COLORS.inkSoft }}>
+          <span
+            className="text-sm flex items-center gap-1"
+            style={{ color: allOverviewActive ? COLORS.gold : COLORS.inkSoft }}
+          >
             Samlet netto, alle prosjekter
+            <ChevronRight size={14} />
           </span>
           <span
             className="text-lg font-semibold"
@@ -52,7 +59,7 @@ export default function Dashboard({
             {overallTotal >= 0 ? "+" : ""}
             {formatKr(overallTotal)}
           </span>
-        </div>
+        </button>
       </div>
 
       <div>

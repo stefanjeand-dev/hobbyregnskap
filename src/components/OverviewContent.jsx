@@ -11,9 +11,10 @@ import { COLORS } from "../constants";
 import { formatKr, monthLabel } from "../lib/format";
 import CategoryBarList from "./CategoryBarList";
 
-// Oversikt-fanen: kategori-breakdown øverst («hvor du blør mest»),
-// deretter måned/år-graf og lister. Grafen er høyere på desktop.
-export default function OverviewPanel({
+// Delt oversiktsvisning: kategori-breakdown øverst («hvor du blør mest»),
+// deretter måned/år-graf og lister. Brukes både per prosjekt og samlet.
+// Grafen er høyere på desktop. Dataene kommer fra buildOverview(txns).
+export default function OverviewContent({
   monthlyData,
   yearlyData,
   categoryBreakdown,
