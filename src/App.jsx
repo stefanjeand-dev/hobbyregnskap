@@ -7,8 +7,10 @@ import Dashboard from "./components/Dashboard";
 import ProjectDetail from "./components/ProjectDetail";
 import EmptyDetail from "./components/EmptyDetail";
 import AllOverview from "./components/AllOverview";
+import Driftskonto from "./components/Driftskonto";
 import AddProjectSheet from "./components/AddProjectSheet";
 import AddTransactionSheet from "./components/AddTransactionSheet";
+import AddTransferSheet from "./components/AddTransferSheet";
 import SettingsSheet from "./components/SettingsSheet";
 
 export default function App() {
@@ -24,6 +26,9 @@ export default function App() {
   const [editingTxn, setEditingTxn] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showAllOverview, setShowAllOverview] = useState(false);
+  const [showDriftskonto, setShowDriftskonto] = useState(false);
+  const [showAddTransfer, setShowAddTransfer] = useState(false);
+  const [editingTransfer, setEditingTransfer] = useState(null);
 
   const persist = (next) => {
     setData(next);
@@ -67,6 +72,24 @@ export default function App() {
     persist({ ...data, transactions: data.transactions.filter((t) => t.id !== id) });
   };
 
+  // Driftskonto: egen struktur, helt adskilt fra transaksjonene ovenfor.
+  const saveTransfer = (transfer, editingId) => {
+    if (editingId) {
+      persist({
+        ...data,
+        transfers: data.transfers.map((t) =>
+          t.id === editingId ? { ...t, ...transfer } : t
+        ),
+      });
+    } else {
+      persist({ ...data, transfers: [...data.transfers, { id: uid(), ...transfer }] });
+    }
+  };
+
+  const deleteTransfer = (id) => {
+    persist({ ...data, transfers: data.transfers.filter((t) => t.id !== id) });
+  };
+
   const addCustomCategory = (type, name) => {
     const existing = allCategories[type];
     if (existing.some((c) => c.toLowerCase() === name.toLowerCase())) return;
@@ -83,6 +106,7 @@ export default function App() {
     persist(emptyData());
     setActiveProjectId(null);
     setShowAllOverview(false);
+    setShowDriftskonto(false);
   };
 
   // JSON-import: full overskriving (v1, ingen sammenslåing).
@@ -90,6 +114,7 @@ export default function App() {
     persist(imported);
     setActiveProjectId(null);
     setShowAllOverview(false);
+    setShowDriftskonto(false);
   };
 
   // ---- Avledninger ----
@@ -120,6 +145,13 @@ export default function App() {
     [data.transactions]
   );
 
+  // Sum overført til driftskonto – vises på dashboardet og i visningen.
+  // Bevisst utenfor overallTotal: skal ikke påvirke resultat/netto noe sted.
+  const transfersTotal = useMemo(
+    () => data.transfers.reduce((s, t) => s + t.amount, 0),
+    [data.transfers]
+  );
+
   const activeProject = data.projects.find((p) => p.id === activeProjectId) || null;
 
   const openAddTxn = () => {
@@ -131,14 +163,30 @@ export default function App() {
     setShowAddTxn(true);
   };
 
-  // Valg av prosjekt vs. samlet oversikt er gjensidig utelukkende.
+  // Valg av prosjekt / samlet oversikt / driftskonto er gjensidig utelukkende.
   const selectProject = (id) => {
     setActiveProjectId(id);
     setShowAllOverview(false);
+    setShowDriftskonto(false);
   };
   const openAllOverview = () => {
     setShowAllOverview(true);
     setActiveProjectId(null);
+    setShowDriftskonto(false);
+  };
+  const openDriftskonto = () => {
+    setShowDriftskonto(true);
+    setActiveProjectId(null);
+    setShowAllOverview(false);
+  };
+
+  const openAddTransfer = () => {
+    setEditingTransfer(null);
+    setShowAddTransfer(true);
+  };
+  const openEditTransfer = (transfer) => {
+    setEditingTransfer(transfer);
+    setShowAddTransfer(true);
   };
 
   const dashboard = (
@@ -147,12 +195,15 @@ export default function App() {
       projectTotal={projectTotal}
       projectCount={projectCount}
       overallTotal={overallTotal}
+      transfersTotal={transfersTotal}
       activeProjectId={activeProjectId}
       onSelect={selectProject}
       onAddProject={() => setShowAddProject(true)}
       onOpenSettings={() => setShowSettings(true)}
       onOpenAllOverview={openAllOverview}
       allOverviewActive={isDesktop && showAllOverview}
+      onOpenDriftskonto={openDriftskonto}
+      driftskontoActive={isDesktop && showDriftskonto}
       isDesktop={isDesktop}
     />
   );
@@ -181,6 +232,18 @@ export default function App() {
     />
   );
 
+  const driftskontoEl = (
+    <Driftskonto
+      transfers={data.transfers}
+      transfersTotal={transfersTotal}
+      isDesktop={isDesktop}
+      onBack={() => setShowDriftskonto(false)}
+      onAddTransfer={openAddTransfer}
+      onEditTransfer={openEditTransfer}
+      onDeleteTransfer={deleteTransfer}
+    />
+  );
+
   return (
     <div
       className="min-h-screen w-full"
@@ -191,7 +254,9 @@ export default function App() {
         <div className="max-w-[1100px] mx-auto px-6 py-8 grid grid-cols-[360px_1fr] gap-8 items-start">
           <div>{dashboard}</div>
           <div>
-            {showAllOverview ? (
+            {showDriftskonto ? (
+              driftskontoEl
+            ) : showAllOverview ? (
               allOverviewEl
             ) : detail ? (
               detail
@@ -209,7 +274,13 @@ export default function App() {
           className="max-w-[480px] mx-auto min-h-screen relative pb-28"
           style={{ background: COLORS.paper }}
         >
-          {showAllOverview ? allOverviewEl : activeProject ? detail : dashboard}
+          {showDriftskonto
+            ? driftskontoEl
+            : showAllOverview
+              ? allOverviewEl
+              : activeProject
+                ? detail
+                : dashboard}
         </div>
       )}
 
@@ -228,6 +299,17 @@ export default function App() {
           onClose={() => {
             setShowAddTxn(false);
             setEditingTxn(null);
+          }}
+        />
+      )}
+      {showAddTransfer && (
+        <AddTransferSheet
+          editingTransfer={editingTransfer}
+          onSave={saveTransfer}
+          onDelete={deleteTransfer}
+          onClose={() => {
+            setShowAddTransfer(false);
+            setEditingTransfer(null);
           }}
         />
       )}

@@ -1,18 +1,18 @@
 // Fargepalett, standardkategorier og lagringsnøkler.
-// Videreført uendret fra artefaktet (HobbyRegnskap.jsx).
+// Palett «Tømmer» – varm, kobber/mose-basert (se teknisk brief).
 
 export const COLORS = {
-  paper: "#E7E2D0",
-  paperDark: "#DBD3B8",
-  card: "#F1ECDD",
-  ink: "#252B1E",
-  inkSoft: "#6B6D5A",
-  income: "#3F6B52",
-  incomeBg: "#DFE7DC",
-  expense: "#A3492F",
-  expenseBg: "#F0DED4",
-  line: "#C6BC9C",
-  gold: "#AD8226",
+  paper: "#EFE6D8",
+  paperDark: "#E1D2B8",
+  card: "#F7F0E3",
+  ink: "#3B2A20",
+  inkSoft: "#8A7361",
+  income: "#5C7A4C",
+  incomeBg: "#E2E8D9",
+  expense: "#BE5B2E",
+  expenseBg: "#F3DFCF",
+  line: "#D9C6A8",
+  gold: "#A67C2E",
 };
 
 export const DEFAULT_CATEGORIES = {

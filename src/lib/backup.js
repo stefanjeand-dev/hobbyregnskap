@@ -15,6 +15,7 @@ export const buildBackup = (data) => ({
   data: {
     projects: data.projects,
     transactions: data.transactions,
+    transfers: data.transfers,
     customCategories: data.customCategories,
   },
 });

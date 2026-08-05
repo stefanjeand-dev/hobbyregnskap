@@ -9,12 +9,15 @@ export default function Dashboard({
   projectTotal,
   projectCount,
   overallTotal,
+  transfersTotal,
   activeProjectId,
   onSelect,
   onAddProject,
   onOpenSettings,
   onOpenAllOverview,
   allOverviewActive = false,
+  onOpenDriftskonto,
+  driftskontoActive = false,
   isDesktop = false,
 }) {
   return (
@@ -58,6 +61,25 @@ export default function Dashboard({
           >
             {overallTotal >= 0 ? "+" : ""}
             {formatKr(overallTotal)}
+          </span>
+        </button>
+        <button
+          onClick={onOpenDriftskonto}
+          className="w-full flex items-baseline justify-between py-3 text-left active:opacity-70 transition-opacity"
+          style={{ background: "none", border: "none", borderBottom: `1px solid ${COLORS.line}` }}
+        >
+          <span
+            className="text-sm flex items-center gap-1"
+            style={{ color: driftskontoActive ? COLORS.gold : COLORS.inkSoft }}
+          >
+            Driftskonto
+            <ChevronRight size={14} />
+          </span>
+          <span
+            className="text-lg font-semibold"
+            style={{ fontFamily: "'IBM Plex Mono', monospace", color: COLORS.gold }}
+          >
+            {formatKr(transfersTotal)}
           </span>
         </button>
       </div>
