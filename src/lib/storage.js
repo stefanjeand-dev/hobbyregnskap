@@ -6,6 +6,7 @@ import { STORAGE_KEY } from "../constants";
 export const emptyData = () => ({
   projects: [],
   transactions: [],
+  transfers: [],
   customCategories: { income: [], expense: [] },
 });
 
@@ -13,6 +14,7 @@ export const emptyData = () => ({
 export const normalizeData = (parsed) => ({
   projects: Array.isArray(parsed?.projects) ? parsed.projects : [],
   transactions: Array.isArray(parsed?.transactions) ? parsed.transactions : [],
+  transfers: Array.isArray(parsed?.transfers) ? parsed.transfers : [],
   customCategories: {
     income: Array.isArray(parsed?.customCategories?.income)
       ? parsed.customCategories.income

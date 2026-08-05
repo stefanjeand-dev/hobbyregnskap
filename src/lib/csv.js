@@ -58,3 +58,13 @@ export const exportProjectCsv = (project, transactions, projectsById) => {
   const csv = buildCsv(txns, projectsById);
   downloadCsv(csv, `hobbyregnskap-${slugify(project.name)}-${todayISO()}.csv`);
 };
+
+// Eksporter driftskonto-overføringene (egen struktur, ikke transaksjoner).
+export const exportTransfersCsv = (transfers) => {
+  const header = ["Dato", "Beløp (kr)", "Kommentar"];
+  const rows = [...transfers]
+    .sort((a, b) => (a.date < b.date ? -1 : 1))
+    .map((t) => [t.date, String(t.amount).replace(".", ","), t.comment || ""]);
+  const csv = [header, ...rows].map((r) => r.map(csvField).join(";")).join("\r\n");
+  downloadCsv(csv, `hobbyregnskap-driftskonto-${todayISO()}.csv`);
+};

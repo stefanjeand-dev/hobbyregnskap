@@ -58,8 +58,9 @@ export default function SettingsSheet({
   return (
     <Sheet title="Innstillinger" onClose={onClose}>
       <p className="text-xs mb-4" style={{ color: COLORS.inkSoft }}>
-        {data.projects.length} prosjekt(er), {data.transactions.length} transaksjon(er)
-        lagret. Alt ligger kun på denne enheten.
+        {data.projects.length} prosjekt(er), {data.transactions.length} transaksjon(er),{" "}
+        {data.transfers.length} overføring(er) til driftskonto lagret. Alt ligger kun på
+        denne enheten.
       </p>
 
       {/* CSV – for regnskap/Excel */}
