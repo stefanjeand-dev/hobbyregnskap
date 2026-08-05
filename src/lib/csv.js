@@ -60,11 +60,17 @@ export const exportProjectCsv = (project, transactions, projectsById) => {
 };
 
 // Eksporter driftskonto-overføringene (egen struktur, ikke transaksjoner).
+// Retning ('in'/'out') skrives som «Inn»/«Ut»; poster uten type = «Inn».
 export const exportTransfersCsv = (transfers) => {
-  const header = ["Dato", "Beløp (kr)", "Kommentar"];
+  const header = ["Dato", "Type", "Beløp (kr)", "Kommentar"];
   const rows = [...transfers]
     .sort((a, b) => (a.date < b.date ? -1 : 1))
-    .map((t) => [t.date, String(t.amount).replace(".", ","), t.comment || ""]);
+    .map((t) => [
+      t.date,
+      t.type === "out" ? "Ut" : "Inn",
+      String(t.amount).replace(".", ","),
+      t.comment || "",
+    ]);
   const csv = [header, ...rows].map((r) => r.map(csvField).join(";")).join("\r\n");
   downloadCsv(csv, `hobbyregnskap-driftskonto-${todayISO()}.csv`);
 };

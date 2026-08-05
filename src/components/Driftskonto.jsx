@@ -80,6 +80,7 @@ export default function Driftskonto({
             color: COLORS.gold,
           }}
         >
+          {transfersTotal >= 0 ? "+" : ""}
           {formatKr(transfersTotal)}
         </span>
       </div>

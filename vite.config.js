@@ -26,8 +26,8 @@ export default defineConfig({
         description:
           "Enkelt regnskap for hobbyprosjekter – inntekter, utgifter og resultat. Alt lagres lokalt på enheten din.",
         lang: "nb",
-        theme_color: "#EFE6D8",
-        background_color: "#EFE6D8",
+        theme_color: "#1E232B",
+        background_color: "#1E232B",
         display: "standalone",
         orientation: "portrait",
         start_url: base,

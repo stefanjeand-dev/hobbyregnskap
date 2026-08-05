@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Hobbyregnskap">
-  <!-- Paper-bakgrunn (matcher theme_color, palett «Tømmer») -->
-  <rect width="512" height="512" fill="#EFE6D8"/>
+  <!-- Paper-bakgrunn (matcher theme_color, palett «Nattledger») -->
+  <rect width="512" height="512" fill="#1E232B"/>
   <!-- Monogram «H» tegnet som vektorformer med slab-serif for Fraunces-preg.
        All geometri holdes innenfor den sentrale trygge sonen (maskable). -->
-  <g fill="#3B2A20">
+  <g fill="#EDE7D8">
     <!-- Venstre stamme + serifer -->
     <rect x="161" y="156" width="32" height="200" rx="4"/>
     <rect x="147" y="152" width="60" height="16" rx="4"/>
@@ -16,5 +16,5 @@
     <rect x="185" y="240" width="142" height="32" rx="4"/>
   </g>
   <!-- Gull-baselinje: diskret signatur-nikk -->
-  <rect x="196" y="378" width="120" height="8" rx="4" fill="#A67C2E"/>
+  <rect x="196" y="378" width="120" height="8" rx="4" fill="#D4AF6A"/>
 </svg>

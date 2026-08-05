@@ -6,9 +6,15 @@ body,
   height: 100%;
 }
 
+/* Mørk palett (Nattledger): la nettleseren rendre native kontroller
+   (dato-velger, rullefelt, form-felt) i mørk variant. */
+:root {
+  color-scheme: dark;
+}
+
 body {
   margin: 0;
-  background: #efe6d8; /* paper (Tømmer) */
+  background: #1e232b; /* paper (Nattledger) */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* Unngå gummibånd-scroll / uønsket zoom på iOS */

@@ -1,18 +1,18 @@
 // Fargepalett, standardkategorier og lagringsnøkler.
-// Palett «Tømmer» – varm, kobber/mose-basert (se teknisk brief).
+// Palett «Nattledger» – mørk, kullblå bunn med pergament-tekst (se teknisk brief).
 
 export const COLORS = {
-  paper: "#EFE6D8",
-  paperDark: "#E1D2B8",
-  card: "#F7F0E3",
-  ink: "#3B2A20",
-  inkSoft: "#8A7361",
-  income: "#5C7A4C",
-  incomeBg: "#E2E8D9",
-  expense: "#BE5B2E",
-  expenseBg: "#F3DFCF",
-  line: "#D9C6A8",
-  gold: "#A67C2E",
+  paper: "#1E232B",
+  paperDark: "#161A20",
+  card: "#262C36",
+  ink: "#EDE7D8",
+  inkSoft: "#9A8F7E",
+  income: "#7FA88C",
+  incomeBg: "#28352C",
+  expense: "#E0876A",
+  expenseBg: "#3A2A24",
+  line: "#3A3F48",
+  gold: "#D4AF6A",
 };
 
 export const DEFAULT_CATEGORIES = {

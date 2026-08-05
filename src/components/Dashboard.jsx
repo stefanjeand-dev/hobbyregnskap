@@ -79,6 +79,7 @@ export default function Dashboard({
             className="text-lg font-semibold"
             style={{ fontFamily: "'IBM Plex Mono', monospace", color: COLORS.gold }}
           >
+            {transfersTotal >= 0 ? "+" : ""}
             {formatKr(transfersTotal)}
           </span>
         </button>
