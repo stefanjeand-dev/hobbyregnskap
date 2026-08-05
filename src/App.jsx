@@ -145,10 +145,11 @@ export default function App() {
     [data.transactions]
   );
 
-  // Sum overført til driftskonto – vises på dashboardet og i visningen.
-  // Bevisst utenfor overallTotal: skal ikke påvirke resultat/netto noe sted.
+  // Netto saldo på driftskonto: innskudd ('in') legges til, uttak ('out')
+  // trekkes fra. Poster uten type behandles som 'in'. Bevisst utenfor
+  // overallTotal: skal ikke påvirke resultat/netto noe sted.
   const transfersTotal = useMemo(
-    () => data.transfers.reduce((s, t) => s + t.amount, 0),
+    () => data.transfers.reduce((s, t) => s + (t.type === "out" ? -t.amount : t.amount), 0),
     [data.transfers]
   );
 

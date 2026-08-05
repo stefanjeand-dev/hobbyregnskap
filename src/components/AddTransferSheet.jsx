@@ -7,6 +7,9 @@ import Sheet from "./Sheet";
 // Egen datastruktur { amount, date, comment } – helt adskilt fra transaksjoner.
 export default function AddTransferSheet({ editingTransfer, onSave, onDelete, onClose }) {
   const isEdit = !!editingTransfer;
+  // Retning: 'in' = innskudd til driftskonto, 'out' = uttak. Gamle poster
+  // uten type-felt behandles som 'in'.
+  const [type, setType] = useState(editingTransfer ? editingTransfer.type || "in" : "in");
   const [amount, setAmount] = useState(
     editingTransfer ? String(editingTransfer.amount).replace(".", ",") : ""
   );
@@ -19,7 +22,7 @@ export default function AddTransferSheet({ editingTransfer, onSave, onDelete, on
     const num = parseFloat(amount.replace(",", "."));
     if (!(num > 0)) return;
     onSave(
-      { amount: num, date, comment: comment.trim() },
+      { type, amount: num, date, comment: comment.trim() },
       editingTransfer ? editingTransfer.id : null
     );
     onClose();
@@ -27,11 +30,32 @@ export default function AddTransferSheet({ editingTransfer, onSave, onDelete, on
 
   return (
     <Sheet
-      title={isEdit ? "Rediger overføring" : "Ny overføring til driftskonto"}
+      title={isEdit ? "Rediger overføring" : "Ny overføring — driftskonto"}
       onClose={onClose}
     >
+      <div
+        className="flex rounded-lg overflow-hidden mb-4"
+        style={{ border: `1px solid ${COLORS.line}` }}
+      >
+        {["in", "out"].map((t) => (
+          <button
+            key={t}
+            onClick={() => setType(t)}
+            className="flex-1 py-2.5 text-sm font-medium"
+            style={{
+              background: type === t ? COLORS.card : "transparent",
+              color: type === t ? COLORS.gold : COLORS.inkSoft,
+            }}
+          >
+            {t === "in" ? "Inn til driftskonto" : "Ut fra driftskonto"}
+          </button>
+        ))}
+      </div>
+
       <p className="text-xs mb-4" style={{ color: COLORS.inkSoft }}>
-        Registrerer at penger er flyttet ut av prosjektene og over til sparekontoen din.
+        {type === "in"
+          ? "Registrerer at penger er flyttet ut av prosjektene og over til sparekontoen din."
+          : "Registrerer at penger er tatt ut av sparekontoen og tilbake i bruk."}{" "}
         Påvirker ikke resultat-tallene.
       </p>
 
