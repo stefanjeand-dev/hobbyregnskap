@@ -13,6 +13,9 @@ import AddTransactionSheet from "./components/AddTransactionSheet";
 import AddTransferSheet from "./components/AddTransferSheet";
 import SettingsSheet from "./components/SettingsSheet";
 
+// Inneværende kalenderår, regnet fra dagens dato.
+const CURRENT_YEAR = new Date().getFullYear();
+
 export default function App() {
   // Ett brytepunkt: ≥1024px = desktop (to kolonner), ellers mobil (helskjerm).
   const isDesktop = useMediaQuery("(min-width: 1024px)");
@@ -20,6 +23,8 @@ export default function App() {
   // localStorage leses synkront som lazy initializer → ingen «laster»-skjerm.
   const [data, setData] = useState(loadData);
   const [saveError, setSaveError] = useState(false);
+  // Visningsfilter for år – ikke en nullstilling. Standard: inneværende år.
+  const [selectedYear, setSelectedYear] = useState(CURRENT_YEAR);
   const [activeProjectId, setActiveProjectId] = useState(null);
   const [showAddProject, setShowAddProject] = useState(false);
   const [showAddTxn, setShowAddTxn] = useState(false);
@@ -107,6 +112,7 @@ export default function App() {
     setActiveProjectId(null);
     setShowAllOverview(false);
     setShowDriftskonto(false);
+    setSelectedYear(CURRENT_YEAR);
   };
 
   // JSON-import: full overskriving (v1, ingen sammenslåing).
@@ -115,6 +121,7 @@ export default function App() {
     setActiveProjectId(null);
     setShowAllOverview(false);
     setShowDriftskonto(false);
+    setSelectedYear(CURRENT_YEAR);
   };
 
   // ---- Avledninger ----
@@ -123,34 +130,63 @@ export default function App() {
     [data.projects]
   );
 
+  // Alle år med data (fra transaksjoner OG driftskonto-bevegelser), pluss
+  // inneværende år og det valgte året – alltid synkende. Året avgjøres av
+  // postens dato, ikke registreringstidspunktet.
+  const availableYears = useMemo(() => {
+    const years = new Set([CURRENT_YEAR, selectedYear]);
+    for (const t of data.transactions) years.add(Number(t.date.slice(0, 4)));
+    for (const t of data.transfers) years.add(Number(t.date.slice(0, 4)));
+    return [...years].sort((a, b) => b - a);
+  }, [data.transactions, data.transfers, selectedYear]);
+
+  // Valgt år som visningsfilter. Ingenting slettes – transaksjoner utenfor
+  // året skjules bare. Driftskonto-saldoen er unntatt (se transfersTotal).
+  const yearStr = String(selectedYear);
+  const filteredTransactions = useMemo(
+    () => data.transactions.filter((t) => t.date.slice(0, 4) === yearStr),
+    [data.transactions, yearStr]
+  );
+
   const totalsByProject = useMemo(() => {
     const map = {};
-    for (const t of data.transactions) {
+    for (const t of filteredTransactions) {
       if (!map[t.projectId]) map[t.projectId] = { total: 0, count: 0 };
       map[t.projectId].total += t.type === "income" ? t.amount : -t.amount;
       map[t.projectId].count += 1;
     }
     return map;
-  }, [data.transactions]);
+  }, [filteredTransactions]);
 
   const projectTotal = (id) => totalsByProject[id]?.total || 0;
   const projectCount = (id) => totalsByProject[id]?.count || 0;
 
   const overallTotal = useMemo(
     () =>
-      data.transactions.reduce(
+      filteredTransactions.reduce(
         (s, t) => s + (t.type === "income" ? t.amount : -t.amount),
         0
       ),
-    [data.transactions]
+    [filteredTransactions]
   );
 
   // Netto saldo på driftskonto: innskudd ('in') legges til, uttak ('out')
   // trekkes fra. Poster uten type behandles som 'in'. Bevisst utenfor
   // overallTotal: skal ikke påvirke resultat/netto noe sted.
+  // Saldoen er TOTAL for alle år – aldri filtrert på valgt år.
   const transfersTotal = useMemo(
     () => data.transfers.reduce((s, t) => s + (t.type === "out" ? -t.amount : t.amount), 0),
     [data.transfers]
+  );
+
+  // Driftskonto-bevegelser for valgt år – både selve listen og netto for året.
+  const yearTransfers = useMemo(
+    () => data.transfers.filter((t) => t.date.slice(0, 4) === yearStr),
+    [data.transfers, yearStr]
+  );
+  const transfersYearNet = useMemo(
+    () => yearTransfers.reduce((s, t) => s + (t.type === "out" ? -t.amount : t.amount), 0),
+    [yearTransfers]
   );
 
   const activeProject = data.projects.find((p) => p.id === activeProjectId) || null;
@@ -197,6 +233,9 @@ export default function App() {
       projectCount={projectCount}
       overallTotal={overallTotal}
       transfersTotal={transfersTotal}
+      selectedYear={selectedYear}
+      availableYears={availableYears}
+      onSelectYear={setSelectedYear}
       activeProjectId={activeProjectId}
       onSelect={selectProject}
       onAddProject={() => setShowAddProject(true)}
@@ -213,8 +252,9 @@ export default function App() {
     <ProjectDetail
       key={activeProject.id}
       project={activeProject}
-      transactions={data.transactions}
+      transactions={filteredTransactions}
       projectsById={projectsById}
+      year={selectedYear}
       isDesktop={isDesktop}
       onBack={() => setActiveProjectId(null)}
       onAddTxn={openAddTxn}
@@ -226,8 +266,9 @@ export default function App() {
 
   const allOverviewEl = (
     <AllOverview
-      transactions={data.transactions}
+      transactions={filteredTransactions}
       overallTotal={overallTotal}
+      year={selectedYear}
       isDesktop={isDesktop}
       onBack={() => setShowAllOverview(false)}
     />
@@ -235,8 +276,10 @@ export default function App() {
 
   const driftskontoEl = (
     <Driftskonto
-      transfers={data.transfers}
+      transfers={yearTransfers}
       transfersTotal={transfersTotal}
+      yearNet={transfersYearNet}
+      year={selectedYear}
       isDesktop={isDesktop}
       onBack={() => setShowDriftskonto(false)}
       onAddTransfer={openAddTransfer}
@@ -318,6 +361,8 @@ export default function App() {
         <SettingsSheet
           data={data}
           projectsById={projectsById}
+          yearTransactions={filteredTransactions}
+          year={selectedYear}
           onImportData={importData}
           onClearData={clearAllData}
           onClose={() => setShowSettings(false)}

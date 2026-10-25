@@ -1,7 +1,7 @@
 // CSV-eksport for regnskapsformål (Excel / regnskapsfører / Skatteetaten).
 // Logikken er videreført uendret fra artefaktet.
 
-import { slugify, todayISO } from "./format";
+import { slugify } from "./format";
 
 // BOM (U+FEFF) foran innholdet slik at Excel tolker æøå riktig.
 // Bygges fra tegnkode for å holde kilden ren ASCII (ingen usynlige tegn).
@@ -46,22 +46,25 @@ const downloadCsv = (csvContent, filename) => {
   downloadBlob(blob, filename);
 };
 
-// Eksporter alle transaksjoner på tvers av prosjekter.
-export const exportAllCsv = (transactions, projectsById) => {
+// Eksporter transaksjoner på tvers av prosjekter for valgt år.
+// `transactions` er allerede filtrert på året; `year` inngår i filnavnet.
+export const exportAllCsv = (transactions, projectsById, year) => {
   const csv = buildCsv(transactions, projectsById);
-  downloadCsv(csv, `hobbyregnskap-alle-prosjekter-${todayISO()}.csv`);
+  downloadCsv(csv, `hobbyregnskap-alle-prosjekter-${year}.csv`);
 };
 
-// Eksporter ett prosjekts transaksjoner.
-export const exportProjectCsv = (project, transactions, projectsById) => {
+// Eksporter ett prosjekts transaksjoner for valgt år.
+// `transactions` er allerede filtrert på året; `year` inngår i filnavnet.
+export const exportProjectCsv = (project, transactions, projectsById, year) => {
   const txns = transactions.filter((t) => t.projectId === project.id);
   const csv = buildCsv(txns, projectsById);
-  downloadCsv(csv, `hobbyregnskap-${slugify(project.name)}-${todayISO()}.csv`);
+  downloadCsv(csv, `hobbyregnskap-${slugify(project.name)}-${year}.csv`);
 };
 
-// Eksporter driftskonto-overføringene (egen struktur, ikke transaksjoner).
-// Retning ('in'/'out') skrives som «Inn»/«Ut»; poster uten type = «Inn».
-export const exportTransfersCsv = (transfers) => {
+// Eksporter driftskonto-bevegelsene for valgt år (egen struktur, ikke
+// transaksjoner). `transfers` er allerede filtrert på året; `year` inngår i
+// filnavnet. Retning ('in'/'out') skrives som «Inn»/«Ut»; poster uten type = «Inn».
+export const exportTransfersCsv = (transfers, year) => {
   const header = ["Dato", "Type", "Beløp (kr)", "Kommentar"];
   const rows = [...transfers]
     .sort((a, b) => (a.date < b.date ? -1 : 1))
@@ -72,5 +75,5 @@ export const exportTransfersCsv = (transfers) => {
       t.comment || "",
     ]);
   const csv = [header, ...rows].map((r) => r.map(csvField).join(";")).join("\r\n");
-  downloadCsv(csv, `hobbyregnskap-driftskonto-${todayISO()}.csv`);
+  downloadCsv(csv, `hobbyregnskap-driftskonto-${year}.csv`);
 };

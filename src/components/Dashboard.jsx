@@ -10,6 +10,9 @@ export default function Dashboard({
   projectCount,
   overallTotal,
   transfersTotal,
+  selectedYear,
+  availableYears = [],
+  onSelectYear,
   activeProjectId,
   onSelect,
   onAddProject,
@@ -37,6 +40,37 @@ export default function Dashboard({
         <button onClick={onOpenSettings} className="p-2" aria-label="Innstillinger">
           <Settings size={20} style={{ color: COLORS.inkSoft }} />
         </button>
+      </div>
+
+      {/* Årsvelger – visningsfilter for hele dashbordet. Driftskonto-saldoen
+          er unntatt og forblir total for alle år. */}
+      <div className="mb-5">
+        <label
+          htmlFor="year-select"
+          className="text-[10px] uppercase tracking-widest block mb-1"
+          style={{ color: COLORS.inkSoft }}
+        >
+          År
+        </label>
+        <select
+          id="year-select"
+          value={selectedYear}
+          onChange={(e) => onSelectYear(Number(e.target.value))}
+          className="w-full px-3 py-2 rounded-lg text-sm outline-none"
+          style={{
+            background: COLORS.card,
+            color: COLORS.ink,
+            border: `1px solid ${COLORS.line}`,
+            fontFamily: "'IBM Plex Mono', monospace",
+            fontWeight: 600,
+          }}
+        >
+          {availableYears.map((y) => (
+            <option key={y} value={y}>
+              {y}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="mb-6">
