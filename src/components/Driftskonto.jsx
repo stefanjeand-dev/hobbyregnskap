@@ -12,12 +12,16 @@ import TransferRow from "./TransferRow";
 export default function Driftskonto({
   transfers,
   transfersTotal,
+  yearNet,
+  year,
   isDesktop = false,
   onBack,
   onAddTransfer,
   onEditTransfer,
   onDeleteTransfer,
 }) {
+  // `transfers` er allerede filtrert på valgt år (bevegelsene). Saldoen
+  // (transfersTotal) er derimot total for alle år og filtreres aldri.
   const sorted = useMemo(
     () => [...transfers].sort((a, b) => (a.date < b.date ? 1 : -1)),
     [transfers]
@@ -44,7 +48,7 @@ export default function Driftskonto({
           <div className="flex items-center gap-4">
             {transfers.length > 0 && (
               <button
-                onClick={() => exportTransfersCsv(transfers)}
+                onClick={() => exportTransfersCsv(transfers, year)}
                 className="flex items-center gap-1 text-xs"
                 style={{ color: COLORS.inkSoft }}
                 aria-label="Eksporter driftskonto til CSV"
@@ -69,8 +73,13 @@ export default function Driftskonto({
         >
           Driftskonto
         </h1>
-        <p className="text-xs mt-1 mb-2" style={{ color: COLORS.inkSoft }}>
+        <p className="text-xs mt-1 mb-3" style={{ color: COLORS.inkSoft }}>
           Penger flyttet til sparekonto — påvirker ikke resultatet
+        </p>
+
+        {/* Saldo er total for alle år (aldri filtrert). */}
+        <p className="text-[10px] uppercase tracking-widest" style={{ color: COLORS.inkSoft }}>
+          Saldo (alle år)
         </p>
         <span
           className="text-2xl block"
@@ -83,13 +92,22 @@ export default function Driftskonto({
           {transfersTotal >= 0 ? "+" : ""}
           {formatKr(transfersTotal)}
         </span>
+
+        {/* Bevegelser (netto) for valgt år. */}
+        <p className="text-xs mt-2" style={{ color: COLORS.inkSoft }}>
+          Bevegelser i {year}:{" "}
+          <span style={{ fontFamily: "'IBM Plex Mono', monospace", color: COLORS.ink }}>
+            {yearNet >= 0 ? "+" : ""}
+            {formatKr(yearNet)}
+          </span>
+        </p>
       </div>
 
       {/* Liste */}
       <div className={`${pad} mt-4`}>
         {sorted.length === 0 ? (
           <div className="text-center py-12 text-sm" style={{ color: COLORS.inkSoft }}>
-            Ingen overføringer registrert ennå.
+            Ingen bevegelser i {year}.
           </div>
         ) : (
           sorted.map((t) => (

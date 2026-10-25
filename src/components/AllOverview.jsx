@@ -8,7 +8,7 @@ import OverviewContent from "./OverviewContent";
 // Samlet oversikt på tvers av alle prosjekter. Bruker samme buildOverview +
 // OverviewContent som per-prosjekt-visningen, men på hele transaksjonssettet.
 // Full mobilskjerm, eller høyre kolonne på desktop.
-export default function AllOverview({ transactions, overallTotal, isDesktop = false, onBack }) {
+export default function AllOverview({ transactions, overallTotal, year, isDesktop = false, onBack }) {
   const overview = useMemo(() => buildOverview(transactions), [transactions]);
   const pad = isDesktop ? "" : "px-5";
 
@@ -24,6 +24,9 @@ export default function AllOverview({ transactions, overallTotal, isDesktop = fa
             <ArrowLeft size={14} /> Dashboard
           </button>
         )}
+        <p className="text-[10px] uppercase tracking-widest" style={{ color: COLORS.inkSoft }}>
+          Regnskapsår {year}
+        </p>
         <h1
           className="text-2xl"
           style={{ fontFamily: "'Fraunces', serif", fontWeight: 600, color: COLORS.ink }}

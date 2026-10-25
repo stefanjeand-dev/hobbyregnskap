@@ -8,6 +8,8 @@ import Sheet from "./Sheet";
 export default function SettingsSheet({
   data,
   projectsById,
+  yearTransactions,
+  year,
   onImportData,
   onClearData,
   onClose,
@@ -68,18 +70,21 @@ export default function SettingsSheet({
         Regnskap
       </p>
       <button
-        onClick={() => exportAllCsv(data.transactions, projectsById)}
-        disabled={data.transactions.length === 0}
-        className="w-full flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold mb-5"
+        onClick={() => exportAllCsv(yearTransactions, projectsById, year)}
+        disabled={yearTransactions.length === 0}
+        className="w-full flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold mb-1"
         style={{
           background: COLORS.card,
           color: COLORS.ink,
           border: `1px solid ${COLORS.line}`,
-          opacity: data.transactions.length === 0 ? 0.5 : 1,
+          opacity: yearTransactions.length === 0 ? 0.5 : 1,
         }}
       >
-        <Download size={15} /> Eksporter alt til CSV
+        <Download size={15} /> Eksporter {year} til CSV
       </button>
+      <p className="text-[11px] mb-5" style={{ color: COLORS.inkSoft }}>
+        CSV-en gjelder valgt år ({year}). Sikkerhetskopien under inneholder alle år.
+      </p>
 
       {/* JSON – full sikkerhetskopi / flytt mellom egne enheter */}
       <p className="text-[10px] uppercase tracking-widest mb-2" style={{ color: COLORS.inkSoft }}>

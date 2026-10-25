@@ -13,6 +13,7 @@ export default function ProjectDetail({
   project,
   transactions,
   projectsById,
+  year,
   isDesktop = false,
   onBack,
   onAddTxn,
@@ -63,7 +64,7 @@ export default function ProjectDetail({
           )}
           <div className="flex items-center gap-4">
             <button
-              onClick={() => exportProjectCsv(project, transactions, projectsById)}
+              onClick={() => exportProjectCsv(project, transactions, projectsById, year)}
               className="flex items-center gap-1 text-xs"
               style={{ color: COLORS.inkSoft }}
               aria-label="Eksporter prosjekt til CSV"
@@ -81,6 +82,9 @@ export default function ProjectDetail({
             )}
           </div>
         </div>
+        <p className="text-[10px] uppercase tracking-widest" style={{ color: COLORS.inkSoft }}>
+          Regnskapsår {year}
+        </p>
         <h1
           className="text-2xl"
           style={{ fontFamily: "'Fraunces', serif", fontWeight: 600, color: COLORS.ink }}
@@ -126,7 +130,7 @@ export default function ProjectDetail({
         {tab === "list" &&
           (projectTxns.length === 0 ? (
             <div className="text-center py-12 text-sm" style={{ color: COLORS.inkSoft }}>
-              Ingen transaksjoner ennå.
+              Ingen transaksjoner i {year}.
             </div>
           ) : (
             projectTxns.map((t) => (
@@ -161,7 +165,7 @@ export default function ProjectDetail({
             <AlertTriangle size={16} style={{ color: COLORS.expense, marginTop: 2 }} />
             <div className="flex-1">
               <p className="text-xs" style={{ color: COLORS.ink }}>
-                Slette «{project.name}» og alle {projectTxns.length} transaksjoner? Dette kan
+                Slette «{project.name}» og alle tilhørende transaksjoner (alle år)? Dette kan
                 ikke angres.
               </p>
               <div className="flex gap-3 mt-2">
